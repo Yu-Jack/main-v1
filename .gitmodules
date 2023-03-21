@@ -1,0 +1,3 @@
+[submodule "ref/sub-v1"]
+	path = ref/sub-v1
+	url = git@github.com:Yu-Jack/sub-v1.git
