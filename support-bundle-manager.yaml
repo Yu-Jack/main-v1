@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: support-bundle-manager
+    rancher/supportbundle: sample
+  name: supportbundle-manager-sample
+  namespace: harvester-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: support-bundle-manager
+  template:
+    metadata:
+      labels:
+        app: support-bundle-manager
+        rancher/supportbundle: sample
+    spec:
+      containers:
+      - args:
+        - /usr/bin/support-bundle-kit
+        - manager
+        env:
+        - name: SUPPORT_BUNDLE_COLLECTOR
+          value: "harvester"
+        - name: SUPPORT_BUNDLE_TARGET_NAMESPACES
+          value: harvester-system,longhorn-system
+        - name: SUPPORT_BUNDLE_NAME
+          value: sample
+        - name: SUPPORT_BUNDLE_DEBUG
+          value: "true"
+        - name: SUPPORT_BUNDLE_MANAGER_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: SUPPORT_BUNDLE_IMAGE
+          value: jk82421/support-bundle-kit:v1.0.6
+        - name: SUPPORT_BUNDLE_IMAGE_PULL_POLICY
+          value: Always
+        image: jk82421/support-bundle-kit:v1.0.6
+        imagePullPolicy: Always
+        name: manager
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      serviceAccountName: harvester
